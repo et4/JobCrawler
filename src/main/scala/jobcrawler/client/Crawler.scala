@@ -13,7 +13,7 @@ class Crawler {
 
   implicit val formats = DefaultFormats
 
-  def getVacanciesIds(dateFrom: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/Moscow")).minus(Duration.ofMinutes(30)),
+  def getVacanciesIds(dateFrom: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/Moscow")).minus(Duration.ofMinutes(10)),
                       dateTo: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/Moscow"))): Seq[Int] = {
     val perPage: Int = 50
     var currentPage: Int = 0

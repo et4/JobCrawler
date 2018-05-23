@@ -30,7 +30,7 @@ class Regression(vacancies: Seq[VacancyInClearFormat]) {
 
     val gbt = new GBTRegressor()
       .setLabelCol("salaryFrom")
-      .setFeaturesCol("descriptionFeatures")
+      .setFeaturesCol("indexedFeatures")
       .setMaxIter(10)
 
 
@@ -62,7 +62,7 @@ class Regression(vacancies: Seq[VacancyInClearFormat]) {
       .setToLowercase(true)
       .setInputCol("description")
       .setOutputCol("descriptionTokens")
-      .setPattern("\\W+")
+      .setPattern("\\s")
 
     val descriptionRemover = new StopWordsRemover()
       .setStopWords(scala.io.Source.fromFile("stop_words").getLines().toArray)
@@ -77,7 +77,7 @@ class Regression(vacancies: Seq[VacancyInClearFormat]) {
       .setToLowercase(true)
       .setInputCol("name")
       .setOutputCol("nameTokens")
-      .setPattern("\\W+")
+      .setPattern("\\s")
 
     val nameRemover = new StopWordsRemover()
       .setStopWords(scala.io.Source.fromFile("stop_words").getLines().toArray)
@@ -92,12 +92,11 @@ class Regression(vacancies: Seq[VacancyInClearFormat]) {
       .setInputCols(Array("descriptionFeatures", "nameFeatures"))
       .setOutputCol("indexedFeatures")
 
-    new Pipeline()
-      .setStages(Array(descriptionTokens, descriptionRemover, descriptionVec))
+    val vectorizedDF: DataFrame = new Pipeline()
+      .setStages(Array(descriptionTokens, descriptionRemover, descriptionVec,
+        nameTokens, nameRemover, name2Vec))
       .fit(df).transform(df)
-  }
 
-  //  private def preparedPipeline(): Pipeline = {
-  //
-  //  }
+    features.transform(vectorizedDF)
+  }
 }

@@ -49,7 +49,7 @@ class Clustering(vacancies: Seq[VacancyInClearFormat]) {
       .setStages(Array(tok, remover, hashTF, word2Vec))
 
     val features = pipeline.fit(vacanciesDS).transform(vacanciesDS)
-    features.select('description, 'features).show(false)
+    features.show(false)
     val bestPair = findBestSilhouettes(features)
     val predictions = getKMeansPredictions(features, bestPair._1)
     println(s"Best number of clusters: ${bestPair._1}")
@@ -84,6 +84,6 @@ class Clustering(vacancies: Seq[VacancyInClearFormat]) {
   private def showElementsFromCluster(predictions: DataFrame, k: Int): Unit = {
     predictions.createOrReplaceTempView("predictions")
     println(s"Elements in $k cluster")
-    predictions.select("description", "prediction").where(s"prediction = $k").show(false)
+    predictions.where(s"prediction = $k").show()
   }
 }
